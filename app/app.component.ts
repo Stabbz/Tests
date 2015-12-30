@@ -11,7 +11,6 @@ import {ExerciseService} from './exercise.service';
   	<h2>My Exercises</h2>
 	<ul class="exercises">
 		<li><a> TODO: List of exercise history </a></li>
-		<li><a> TODO: Set up a repo with only the source files. </a></li>
 	  <li *ngFor="#exercise of exes" 
 	  	[class.selected]="exercise === selectedExercise"
 	  	(click)="onSelect(exercise)">
