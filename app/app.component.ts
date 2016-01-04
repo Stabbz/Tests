@@ -3,21 +3,34 @@ import {OnInit} from 'angular2/core';
 import {Exercise} from './exercise';
 import {ExerciseDetailComponent} from './exercise-detail.component';
 import {ExerciseService} from './exercise.service';
+import {HTTP_BINDINGS, Http} from 'angular2/http';
 
 @Component({
     selector: 'my-app',
+    bindings: [HTTP_BINDINGS],
     template:`
-  	<h1>{{title}}</h1>
-  	<h2>My Exercises</h2>
-	<ul class="exercises">
-		<li><a> TODO: List of exercise history </a></li>
-	  <li *ngFor="#exercise of exes" 
-	  	[class.selected]="exercise === selectedExercise"
-	  	(click)="onSelect(exercise)">
-	    <span class="badge">{{exercise.id}}</span> {{exercise.name}}
-	  </li>
-	</ul>
-	<my-exercise-detail [exercise]="selectedExercise"></my-exercise-detail>
+  	<div>
+	  	<h1>{{title}}</h1>
+	  	<h2>My Exercises</h2>
+	  	<div>
+			<label>name: </label>
+			<input placeholder= "name" />
+			<button type="button" class="btn btn-info btn-md">Add Exercise</button>
+		</div>
+  	</div>
+  	<div class="col-xs-4">
+		<ul class="list-group">
+			<li><a> TODO: List of exercise history </a></li>
+		  	<li class="list-group-item exercise-row" *ngFor="#exercise of exes"
+			  	[class.selected]="exercise === selectedExercise"
+			  	(click)="onSelect(exercise)">
+		    	<span class="badge">{{exercise.id}}</span> {{exercise.name}}
+		  	</li>
+		</ul>
+	</div>
+	<div class="col-xs-12">
+		<my-exercise-detail [exercise]="selectedExercise"></my-exercise-detail>
+  	</div>
   	`,
 	styles: [`
     .selected {
@@ -25,25 +38,16 @@ import {ExerciseService} from './exercise.service';
       color: white;
     }
     .exercises {
-      margin: 0 0 2em 0;
-      list-style-type: none;
-      padding: 0;
-      width: 10em;
+      
     }
-    .exercises li {
+    .exercise-row {
       cursor: pointer;
       position: relative;
-      left: 0;
-      background-color: #EEE;
-      margin: .5em;
-      padding: .3em 0em;
-      height: 1.6em;
-      border-radius: 4px;
     }
-    .exercises li.selected:hover {
+    .exercise-row.selected:hover {
       color: white;
     }
-    .exercises li:hover {
+    .exercise-row:hover {
       color: #607D8B;
       background-color: #EEE;
       left: .1em;
@@ -72,17 +76,25 @@ import {ExerciseService} from './exercise.service';
 })
 
 export class AppComponent implements OnInit { 
-	constructor(private _exerciseService: ExerciseService) { }
-	public selectedExercise: Exercise;
 	public exes: Exercise[];
+	public selectedExercise: Exercise;
 	public title = 'Exercise Tracking';
+	public exData: Exercise[];
+
+	constructor(http: Http) {
+		http.get('http://localhost:8080/fit-track-services/exercises').subscribe(res => {
+			this.exes = res.json();
+			console.log(this.exes);
+		});
+	}
 
 	ngOnInit() {
-		this.getExercises();
+		// this.getExercises();
 	}
 
 	getExercises() {
-		this._exerciseService.getExercises().then(exes => this.exes = exes);
+
+		// this._exerciseService.getExercises().then(exes => this.exes = exes);
 	}
 
 	onSelect(ex: Exercise) { this.selectedExercise = ex; }
